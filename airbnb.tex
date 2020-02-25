@@ -1,0 +1,272 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Airbnb},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Airbnb}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Airbnb, Inc (Airbnb) adalah \emph{marketplace} untuk memesan
+penginapan/\emph{homestay} atau paket liburan, secara online melalui
+aplikasi. Pengguna cukup mengunduh aplikasi Airbnb melalui Google
+Play/Apple Store, kemudian pengguna akan mencari lokasi properti
+penginapan, berikut tanggal menginap. Aplikasi kemudian akan menampilkan
+daftar properti yang tersedia pada lokasi dan tanggal tersebut. Pengguna
+kemudian membayarkan \emph{fee} kepada Airbnb, untuk diteruskan kepada
+pemilik properti. Dalam hal ini, perusahaan Airbnb tidak memiliki aset
+properti yang ditawarkan, namun Airbnb bertindak sebagai perantara
+(antara pemilik properti {[}host{]} dan pengguna). Airbnb berkantor
+pusat di San Fransisco, California, Amerika Serikat.
+
+Dari properti yang tersedia di Airbnb, apakah faktor penentu harga
+properti di Airbnb?
+
+\hypertarget{methodology}{%
+\section{Methodology}\label{methodology}}
+
+SteveZheng (Steve Zheng), merupakan kontributor di Kaggle.com yang
+mengunggah dataset
+\href{https://www.kaggle.com/stevezhenghp/airbnb-price-prediction}{``Airbnb
+price prediction''}. Dataset terdiri dari \textbf{74111} baris data,
+dengan \textbf{29} fitur
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ----------------------------------------------- tidyverse 1.2.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts -------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{airBNB<-}\KeywordTok{read_csv}\NormalTok{(}\StringTok{"train.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   id = col_double(),
+##   log_price = col_double(),
+##   accommodates = col_double(),
+##   bathrooms = col_double(),
+##   cleaning_fee = col_logical(),
+##   first_review = col_date(format = ""),
+##   host_has_profile_pic = col_logical(),
+##   host_identity_verified = col_logical(),
+##   host_since = col_date(format = ""),
+##   instant_bookable = col_logical(),
+##   last_review = col_date(format = ""),
+##   latitude = col_double(),
+##   longitude = col_double(),
+##   number_of_reviews = col_double(),
+##   review_scores_rating = col_double(),
+##   bedrooms = col_double(),
+##   beds = col_double()
+## )
+\end{verbatim}
+
+\begin{verbatim}
+## See spec(...) for full column specifications.
+\end{verbatim}
+
+Fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan
+tidak adanya dokumentasi resmi dari kontributor) adalah sebagai berikut
+:
+
+\textbar{}No\textbar{} Feature \textbar{} Description \textbar{}
+\textbar{}1\textbar{} ----------- \textbar{} ----------- \textbar{}
+\textbar{}2\textbar{} id \textbar{} Nomor ID properti \textbar{}
+\textbar{}3\textbar{} log\_price \textbar{} Harga sewa properti (dalam
+bentuk log) \textbar{} \textbar{}4\textbar{} property\_type \textbar{}
+Jenis properti (contoh : apartemen, rumah, dsb) \textbar{}
+\textbar{}5\textbar{} room\_type \textbar{} Jenis kamar yang disewakan
+(contoh : entire home/apt --\textgreater{} seluruh rumah/apartemen,
+private room --\textgreater{} kamar pribadi yang disewakan, Shared room
+--\textgreater{} kamar yang dibagi dengan pengguna lain) \textbar{}
+\textbar{}6\textbar{}amenities\textbar{}Kelengkapan lain dari
+properti\textbar{} \textbar{}7\textbar{}accomodates\textbar{}Jumlah
+kapasitas orang yang dapat menginap dalam properti yang
+disewakan\textbar{} \textbar{}8\textbar{}bathrooms\textbar{}Jumlah kamar
+mandi tersedia\textbar{} \textbar{}9\textbar{}bed\_type\textbar{}Jenis
+kasur yang disediakan : Real Bed, Futon, Pull-out Sofa, Couch atau
+Airbed\textbar{}
+\textbar{}10\textbar{}cancellation\_policy\textbar{}Persyaratan
+pembatalan\textbar{} \textbar{}11\textbar{}cleaning\_fee\textbar{}Ada
+atau tidaknya biaya pembersihan kamar\textbar{}
+\textbar{}12\textbar{}city\textbar{}Kota letak properti berada\textbar{}
+\textbar{}13\textbar{}description\textbar{}Deskripsi properti\textbar{}
+\textbar{}14\textbar{}first\_review\textbar{}Tanggal review
+pertama\textbar{}
+\textbar{}15\textbar{}host\_has\_profile\_pic\textbar{}Penanda apakah
+\emph{host} menampilkan foto profil pada akun Airbnb\textbar{}
+\textbar{}16\textbar{}host\_identity\_verified\textbar{}Penanda apakah
+\emph{host} telah diverifikasi oleh Airbnb\textbar{}
+\textbar{}17\textbar{}host\_response\_rate\textbar{}Kecepatan
+\emph{host} dalam merespons setiap pertanyaan yang masuk\textbar{}
+\textbar{}18\textbar{}host\_since\textbar{}Tanggal \emph{host} mulai
+memasukkan propertinya pada Airbnb\textbar{}
+\textbar{}19\textbar{}instant\_bookable\textbar{}Penanda apakah properti
+dapat langsung di book tanpa perlu adanya konfirmasi dari
+\emph{host}\textbar{}
+\textbar{}20\textbar{}last\_review\textbar{}Tanggal review
+terakhir\textbar{} \textbar{}21\textbar{}latitude\textbar{}Latitude
+lokasi properti\textbar{}
+
+\begin{itemize}
+\tightlist
+\item
+  id = Add a new chunk by clicking the \emph{Insert Chunk} button on the
+  toolbar or by pressing \emph{Ctrl+Alt+I}.
+\end{itemize}
+
+When you save the notebook, an HTML file containing the code and output
+will be saved alongside it (click the \emph{Preview} button or press
+\emph{Ctrl+Shift+K} to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the
+editor. Consequently, unlike \emph{Knit}, \emph{Preview} does not run
+any R code chunks. Instead, the output of the chunk when it was last run
+in the editor is displayed.
+
+
+\end{document}

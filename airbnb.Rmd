@@ -1,0 +1,74 @@
+---
+title: "Airbnb"
+output:
+  html_notebook: default
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# Introduction
+Airbnb, Inc (Airbnb) adalah *marketplace* untuk memesan penginapan/*homestay* atau paket liburan, secara online melalui aplikasi. Pengguna cukup mengunduh aplikasi Airbnb melalui Google Play/Apple Store, kemudian pengguna akan mencari lokasi properti penginapan, berikut tanggal menginap. Aplikasi kemudian akan menampilkan daftar properti yang tersedia pada lokasi dan tanggal tersebut. Pengguna kemudian membayarkan *fee* kepada Airbnb, untuk diteruskan kepada pemilik properti. Dalam hal ini, perusahaan Airbnb tidak memiliki aset properti yang ditawarkan, namun Airbnb bertindak sebagai perantara (antara pemilik properti [host] dan pengguna). Airbnb berkantor pusat di San Fransisco, California, Amerika Serikat.
+
+Dari properti yang tersedia di Airbnb, apakah faktor penentu harga properti di Airbnb?
+
+# Methodology
+
+SteveZheng (Steve Zheng), merupakan kontributor di Kaggle.com yang mengunggah dataset ["Airbnb price prediction"](https://www.kaggle.com/stevezhenghp/airbnb-price-prediction). Dataset merupakan data properti Airbnb yang ada di Amerika Serikat. Dataset terdiri dari **74111** baris data, dengan **29** fitur
+
+```{r}
+
+```
+
+Deskripsi fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan tidak adanya dokumentasi resmi dari kontributor) dan yang digunakan, adalah sebagai berikut : 
+
+
+|No| Feature | Description | Fitur digunakan? | Response/Predictor |
+| ----------- |----------- | ----------- | ----------- | ----------- |
+|1| id | Nomor ID properti | Tidak | - |
+|2| log_price | Harga sewa properti (dalam bentuk log) | Ya | Response |
+|3| property_type | Jenis properti (contoh : apartemen, rumah, dsb) | Ya | Predictor|
+|4| room_type | Jenis kamar yang disewakan (contoh : entire home/apt --> seluruh rumah/apartemen, private room --> kamar pribadi yang disewakan, Shared room --> kamar yang dibagi dengan pengguna lain) |Ya|Predictor|
+|5|amenities|Kelengkapan lain dari properti|Tidak|-|
+|6|accomodates|Jumlah kapasitas orang yang dapat menginap dalam properti yang disewakan|Ya|Predictor|
+|7|bathrooms|Jumlah kamar mandi tersedia|Ya|Predictor|
+|8|bed_type|Jenis kasur yang disediakan : Real Bed, Futon, Pull-out Sofa, Couch atau Airbed|Ya|Predictor|
+|9|cancellation_policy|Persyaratan pembatalan|Ya|Predictor|
+|10|cleaning_fee|Ada atau tidaknya biaya pembersihan kamar|Ya|Predictor|
+|11|city|Kota letak properti berada|Ya|Predictor|
+|12|description|Deskripsi properti|Tidak|-|
+|13|first_review|Tanggal review pertama|Ya|Predictor|
+|14|host_has_profile_pic|Penanda apakah *host* menampilkan foto profil pada akun Airbnb|Tidak|-|
+|15|host_identity_verified|Penanda apakah *host* telah diverifikasi oleh Airbnb|Ya|Predictor|
+|16|host_response_rate|Kecepatan *host* dalam merespons setiap pertanyaan yang masuk|Ya|Predictor|
+|17|host_since|Tanggal *host* mulai memasukkan propertinya pada Airbnb|Ya|Predictor|
+|18|instant_bookable|Penanda apakah properti dapat langsung di book tanpa perlu adanya konfirmasi dari *host*|Ya|Predictor|
+|19|last_review|Tanggal review terakhir|Tidak|-|
+|20|latitude|*Latitude* lokasi properti|Ya|Predictor|
+|21|longitude|*Longitude* lokasi properti|Ya|Predictor|
+|22|name|Nama properti|Tidak|-|
+|23|neighbourhood|nama wilayah|Tidak|-|
+|24|number_of_reviews|jumlah review yang diberikan|Tidak|-|
+|25|review_scores_rating|Skor review|Ya|Predictor|
+|26|thumbnail_url|URL link gambar dari properti|Tidak|-|
+|27|zipcode|Kodepos properti|Tidak|-|
+|28|bedrooms|Banyak kamar tidur|Ya|Predictor|
+|29|beds|Banyak tempat tidur yang disediakan|Ya|Predictor|
+
+Adapun ringkasan dari nilai pada setiap feature adalah sebagai berikut :
+
+```{r}
+library(tidyverse)
+airBNB<-read_csv("train.csv")
+summary(airBNB)
+```
+
+
+
+* id = 
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
