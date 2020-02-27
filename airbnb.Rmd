@@ -15,11 +15,9 @@ Dari properti yang tersedia di Airbnb, apakah faktor penentu harga properti di A
 
 # Methodology
 
+## Data Understanding
+
 SteveZheng (Steve Zheng), merupakan kontributor di Kaggle.com yang mengunggah dataset ["Airbnb price prediction"](https://www.kaggle.com/stevezhenghp/airbnb-price-prediction). Dataset merupakan data properti Airbnb yang ada di Amerika Serikat. Dataset terdiri dari **74111** baris data, dengan **29** fitur
-
-```{r}
-
-```
 
 Deskripsi fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan tidak adanya dokumentasi resmi dari kontributor) dan yang digunakan, adalah sebagai berikut : 
 
@@ -29,7 +27,7 @@ Deskripsi fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan t
 |1| id | Nomor ID properti | Tidak | - |
 |2| log_price | Harga sewa properti (dalam bentuk log) | Ya | Response |
 |3| property_type | Jenis properti (contoh : apartemen, rumah, dsb) | Ya | Predictor|
-|4| room_type | Jenis kamar yang disewakan (contoh : entire home/apt --> seluruh rumah/apartemen, private room --> kamar pribadi yang disewakan, Shared room --> kamar yang dibagi dengan pengguna lain) |Ya|Predictor|
+|4| room_type | Jenis kamar yang disewakan. Contoh : 1) entire home/apt --> seluruh rumah/apartemen, 2) private room --> kamar pribadi yang disewakan, 3) Shared room --> kamar yang dibagi dengan pengguna lain) |Ya|Predictor|
 |5|amenities|Kelengkapan lain dari properti|Tidak|-|
 |6|accomodates|Jumlah kapasitas orang yang dapat menginap dalam properti yang disewakan|Ya|Predictor|
 |7|bathrooms|Jumlah kamar mandi tersedia|Ya|Predictor|
@@ -40,9 +38,9 @@ Deskripsi fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan t
 |12|description|Deskripsi properti|Tidak|-|
 |13|first_review|Tanggal review pertama|Ya|Predictor|
 |14|host_has_profile_pic|Penanda apakah *host* menampilkan foto profil pada akun Airbnb|Tidak|-|
-|15|host_identity_verified|Penanda apakah *host* telah diverifikasi oleh Airbnb|Ya|Predictor|
-|16|host_response_rate|Kecepatan *host* dalam merespons setiap pertanyaan yang masuk|Ya|Predictor|
-|17|host_since|Tanggal *host* mulai memasukkan propertinya pada Airbnb|Ya|Predictor|
+|15|host_identity_verified|Penanda apakah *host* telah diverifikasi oleh Airbnb|Tidak|-|
+|16|host_response_rate|Kecepatan *host* dalam merespons setiap pertanyaan yang masuk|Tidak|-|
+|17|host_since|Tanggal *host* mulai memasukkan propertinya pada Airbnb|Tidak|-|
 |18|instant_bookable|Penanda apakah properti dapat langsung di book tanpa perlu adanya konfirmasi dari *host*|Ya|Predictor|
 |19|last_review|Tanggal review terakhir|Tidak|-|
 |20|latitude|*Latitude* lokasi properti|Ya|Predictor|
@@ -64,7 +62,83 @@ airBNB<-read_csv("train.csv")
 summary(airBNB)
 ```
 
+Dari summary diatas, diketahui bahwa terdapat beberapa feature yang memiliki nilai NA. Fitur review_scores_rating memiliki NA yang cukup tinggi. Hal ini diakibatkan karena properti tersebut belum memiliki rating. Diduga bahwa properti tersebut adalah properti baru. Oleh karena itu, dataset akan dibagi menjadi 2 *cluster*, yakni dataset untuk properti baru (belum pernah dipesan) dan properti lama (pernah dipesan). Adapun *instance* yang memiliki nilai NA untuk setiap cluster nya akan diabaikan dan tidak digunakan untuk proses pemodelan.
 
+Dari data terdapat *instance* yang nilai log_price nya adalah 0. Terkait hal ini, instance tersebut tidak akan dimasukkan kedalam proses modelling
+```{r}
+airBNB<-subset(airBNB,log_price>0)
+```
+
+
+Secara garis besar, data yang digunakan memiliki sebaran harga sebagai berikut : 
+```{r}
+#hist(airBNB$log_price)
+#qplot(data=airBNB,x=log_price,geom="histogram",bins=20)
+#ggplot(data=airBNB,mapping=aes(log_price))
+#ggplot(airBNB,aes(log_price))+geom_freqpoly()
+ggplot(airBNB,aes(log_price))+geom_histogram(bins=20)+labs(title = "Distribusi Harga Properti", x="Harga (dalam fungsi log)", y="Jumlah Properti")
+
+ggplot(airBNB,aes(x=NULL, y=log_price))+geom_boxplot()+labs(title = "Distribusi Harga Properti", y="Harga (dalam fungsi log)")
+#ggplot(airBNB,aes(log_price))+geom_qq()
+#ggplot(airBNB,aes(log_price))+geom_density()
+#ggplot(diamonds, aes(x=carat, y=price, color=cut)) + geom_point() + geom_smooth()
+```
+Dari gambar terlihat bahwa kisaran harga berada pada
+
+Jumlah properti berdasarkan jenis nya, dapat ditampilkan dalam grafik sebagai berikut : 
+```{r}
+ggplot(airBNB,aes(property_type))+geom_bar()
+```
+
+## Metode Pemodelan
+Metode yang digunakan untuk pemodelan adalah dengan menggunakan regresi linear. Dengan menggunakan software R, pemodelan ini dilakukan dengan memanggil fungsi `lm()`, dengan fitur `price` sebagai respon dan variabel lain sebagai prediktor. Nilai alpha yang digunakan untuk menguji hipotesis adalah 0.05.
+
+Fungsi `lm()` juga akan mengubah fitur yang bertipe kategorikal menjadi *dummy variable*
+
+#Result
+
+##Cluster I : Properti Lama
+Tahap pertama dilakukan *subsetting* terhadap dataset yang memiliki `review_scores_rating` lebih dari 0 (tidak NA). 
+```{r}
+subset_airBNB_lama<-subset(airBNB,review_scores_rating>=0)
+```
+
+Pemodelan dibuat dengan memanggil fungsi `lm()` terhadap subset data properti lama
+```{r}
+linearModel_airBNB_lama<-lm(log_price ~ property_type+room_type+accommodates+bathrooms+
+                  bed_type+cancellation_policy+cleaning_fee+city+instant_bookable+
+                  latitude+longitude+review_scores_rating+bedrooms+beds, data=subset_airBNB_lama)
+summary(linearModel_airBNB_lama)
+```
+feature selection
+
+```{r}
+library(mlbench)
+library(caret)
+library(MASS)
+
+fs_both<-stepAIC(linearModel_airBNB_lama,direction = "both")
+```
+
+
+```{r}
+library(ggpubr)
+ks.test(linearModel_airBNB_lama[["residuals"]],pnorm)
+ggqqplot(linearModel_airBNB_lama[["residuals"]])
+ggdensity(linearModel_airBNB_lama[["residuals"]])
+#shapiro.test(linearModel_airBNB_lama[["residuals"]])
+```
+
+
+
+```{r}
+subset_airBNB_baru<-subset(airBNB,is.na(review_scores_rating))
+
+linearModel<-lm(log_price ~ property_type+room_type+accommodates+bathrooms+
+                  bed_type+cancellation_policy+cleaning_fee+city+instant_bookable+
+                  latitude+longitude+bedrooms+beds, data=subset_airBNB_baru)
+summary(linearModel)
+```
 
 * id = 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
