@@ -1,11 +1,11 @@
 ---
-title: "Airbnb"
+title: "Eksplorasi Data Airbnb"
 output:
   html_notebook: default
-  word_document: default
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
+  word_document: default
 ---
 
 # Introduction
@@ -20,7 +20,6 @@ Dari properti yang tersedia di Airbnb, apakah faktor penentu harga properti di A
 SteveZheng (Steve Zheng), merupakan kontributor di Kaggle.com yang mengunggah dataset ["Airbnb price prediction"](https://www.kaggle.com/stevezhenghp/airbnb-price-prediction). Dataset merupakan data properti Airbnb yang ada di Amerika Serikat. Dataset terdiri dari **74111** baris data, dengan **29** fitur
 
 Deskripsi fitur-fitur yang tersedia (menurut interpretasi penulis, dikarenakan tidak adanya dokumentasi resmi dari kontributor) dan yang digunakan, adalah sebagai berikut : 
-
 
 |No| Feature | Description | Fitur digunakan? | Response/Predictor |
 | ----------- |----------- | ----------- | ----------- | ----------- |
@@ -72,33 +71,82 @@ airBNB<-subset(airBNB,log_price>0)
 
 Secara garis besar, data yang digunakan memiliki sebaran harga sebagai berikut : 
 ```{r}
-#hist(airBNB$log_price)
-#qplot(data=airBNB,x=log_price,geom="histogram",bins=20)
-#ggplot(data=airBNB,mapping=aes(log_price))
-#ggplot(airBNB,aes(log_price))+geom_freqpoly()
 ggplot(airBNB,aes(log_price))+geom_histogram(bins=20)+labs(title = "Distribusi Harga Properti", x="Harga (dalam fungsi log)", y="Jumlah Properti")
 
-ggplot(airBNB,aes(x=NULL, y=log_price))+geom_boxplot()+labs(title = "Distribusi Harga Properti", y="Harga (dalam fungsi log)")
-#ggplot(airBNB,aes(log_price))+geom_qq()
-#ggplot(airBNB,aes(log_price))+geom_density()
-#ggplot(diamonds, aes(x=carat, y=price, color=cut)) + geom_point() + geom_smooth()
+ggplot(airBNB,aes(x=NULL, y=log_price))+geom_boxplot()+labs(title = "Distribusi Harga Properti", y="Harga (dalam fungsi log)",x=NULL)
 ```
-Dari gambar terlihat bahwa kisaran harga berada pada
+
+Dari gambar terlihat bahwa harga mayoritas berada pada rentang 4.3 - 5.2
 
 Jumlah properti berdasarkan jenis nya, dapat ditampilkan dalam grafik sebagai berikut : 
 ```{r}
-ggplot(airBNB,aes(property_type))+geom_bar()
+ggplot(airBNB,aes(property_type))+geom_bar()+theme(axis.text.x = element_text(angle = 90))+labs(title = "Jumlah Properti berdasarkan Jenis Properti", y="Jenis Properti",x="Jumlah Properti")+ scale_x_discrete(limits=c(unique(airBNB$property_type)))
 ```
+
+Pada grafik diatas, terlihat bahwa dataset didominasi dengan properti berjenis Apartement (apartemen) dan House (rumah). Distribusi jumlah properti berdasarkan jumlah penginap dapat digambarkan sebagai berikut : 
+
+```{r}
+ggplot(airBNB,aes(accommodates))+geom_bar()+theme(axis.text.x = element_text(angle = 90))+labs(title = "Distribusi Jumlah Properti berdasarkan Jumlah Penginap yang bisa Ditampung", y="Jumlah Properti",x="Jumlah Penginap") + scale_x_discrete(limits=c(1:1:16))
+```
+
+Dari grafik tersebut, mayoritas properti dapat menampung maksimal 2 penginap. Terdapat beberapa properti yang dapat menampung sampai 16 penginap. 
+
+Berdasarkan jumlah kamar mandi yang tersedia pada setiap properti, dapat digambarkan dalam grafik distribusi sebagai berikut :
+
+```{r}
+ggplot(airBNB,aes(bathrooms))+geom_bar()+theme(axis.text.x = element_text(angle = 90))+labs(title = "Distribusi Jumlah Properti berdasarkan Jumlah Kamar Mandi", y="Jumlah Properti",x="Jumlah Kamar Mandi") + scale_x_discrete(limits=seq(from = 0, to = 8, by = 0.5))
+```
+
+Dari grafik dapat ditunjukkan bahwa minimal sebuah properti memiliki 1 kamar mandi. Beberapa properti memiliki kelipatan 0.5, ini artinya bahwa properti tersebut hanya memiliki kloset dan wastafel, namun tidak memiliki *bath tub* ["what does 1 1/2 bath means?"](https://www.homes.com/question/15848/what-does-1-1-2-bath-means/).
+
+Berdasarkan kota, distribusi properti dapat digambarkan sebagai berikut : 
+
+```{r}
+ggplot(airBNB,aes(city))+geom_bar()+theme(axis.text.x = element_text(angle = 90))+labs(title = "Distribusi Jumlah Properti berdasarkan Kota", y="Jumlah Properti",x="Kota")
+```
+
+Data properti yang digunakan mayoritas terletak di New York City (sebanyak lebih dari 30.000 data), sedangkan Los Angeles menempati tempat kedua. Apabila lokasi properti digambarkan dalam peta AS, maka dapat digambarkan sebagai berikut : 
+
+```{r message=FALSE, warning=FALSE}
+library(mapdata)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(rgeos)
+library(maps)
+library(sf)
+library(tools)
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+sites <- data.frame(longitude = airBNB$longitude, 
+                    latitude = airBNB$latitude
+                    )
+states <- st_as_sf(map("state", plot = FALSE, fill = TRUE))
+states <- cbind(states, st_coordinates(st_centroid(states)))
+
+
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = states, fill = NA) + 
+  geom_text(data = states, aes(X, Y, label = ID), size = 2) +
+  geom_point(data = sites, aes(x = longitude, y = latitude), size = 3, 
+             shape = 16, fill = "red") +
+  coord_sf(xlim = c(-121, -70), ylim = c(25, 50), expand = FALSE)+
+  labs(title = "Sebaran Properti Airbnb pada Peta AS")
+
+
+```
+
 
 ## Metode Pemodelan
 Metode yang digunakan untuk pemodelan adalah dengan menggunakan regresi linear. Dengan menggunakan software R, pemodelan ini dilakukan dengan memanggil fungsi `lm()`, dengan fitur `price` sebagai respon dan variabel lain sebagai prediktor. Nilai alpha yang digunakan untuk menguji hipotesis adalah 0.05.
 
-Fungsi `lm()` juga akan mengubah fitur yang bertipe kategorikal menjadi *dummy variable*
+Fungsi `lm()` di R akan otomatis mengubah fitur yang bertipe kategorikal menjadi *dummy variable*
 
-#Result
+# Result
 
-##Cluster I : Properti Lama
-Tahap pertama dilakukan *subsetting* terhadap dataset yang memiliki `review_scores_rating` lebih dari 0 (tidak NA). 
+## Cluster I : Properti Lama
+Tahap pertama dilakukan *subsetting* terhadap dataset yang memiliki `review_scores_rating` lebih dari 0 (tidak NA). Data tersebut disimpan dalam variabel bernama `subset_airBNB_lama`
 ```{r}
 subset_airBNB_lama<-subset(airBNB,review_scores_rating>=0)
 ```
@@ -110,7 +158,15 @@ linearModel_airBNB_lama<-lm(log_price ~ property_type+room_type+accommodates+bat
                   latitude+longitude+review_scores_rating+bedrooms+beds, data=subset_airBNB_lama)
 summary(linearModel_airBNB_lama)
 ```
-feature selection
+
+Dari hasil tersebut didapatkan nilai akurasi, yang diukur dengan R-squared sebesar 0.627 (62.7%). Adapun distribusi dari nilai residual dapat digambarkan sebagai berikut : 
+
+```{r}
+qqnorm(linearModel_airBNB_lama[["residuals"]])
+qqline(linearModel_airBNB_lama[["residuals"]])
+
+```
+Dari grafik tersebut terlihat bahwa residual dari pemodelan linear tidak terdistribusi normal. Model kemudian diperbaiki dengan menggunakan *feature selection*, dengan metode forward & backward (both), dengan sintaks sebagai berikut : 
 
 ```{r}
 library(mlbench)
@@ -120,29 +176,90 @@ library(MASS)
 fs_both<-stepAIC(linearModel_airBNB_lama,direction = "both")
 ```
 
+Dari proses feature selection, didapatkan hasil bahwa variabel `cleaning_fee` dapat diabaikan dalam pemodelan. Fitur yang sudah diseleksi kemudian dimodelkan dengan regresi linear sebagai berikut : 
+```{r}
+linearModel_airBNB_lama_fs<-lm(formula=fs_both[["terms"]],data=subset_airBNB_lama)
+summary(linearModel_airBNB_lama_fs)
+```
+
+Namun demikian, akurasi model tetap tidak berubah, yakni berada pada 62.7%. Adapun residual dari model tidak terdistribusi normal.
+```{r}
+qqnorm(linearModel_airBNB_lama_fs[["residuals"]])
+qqline(linearModel_airBNB_lama_fs[["residuals"]])
+```
+
+Secara teori, apabila variabel independen bernilai 0, maka variabel dependen (log_price) akan bernilai 0. Sehingga, pemodelan dapat dilakukan dengan mengabaikan *intercept*.
+```{r}
+linearModel_airBNB_lama_nointercept<-lm(log_price ~ 0+property_type+room_type+accommodates+bathrooms+
+                  bed_type+cancellation_policy+city+instant_bookable+
+                  latitude+longitude+review_scores_rating+bedrooms+beds, data=subset_airBNB_lama)
+summary(linearModel_airBNB_lama_nointercept)
+```
+
+Hasilnya, terjadi peningkatan akurasi dari 62.7% menjadi 99.2%. Namun demikian, residual tetap tidak terdistribusi linear
 
 ```{r}
-library(ggpubr)
-ks.test(linearModel_airBNB_lama[["residuals"]],pnorm)
-ggqqplot(linearModel_airBNB_lama[["residuals"]])
-ggdensity(linearModel_airBNB_lama[["residuals"]])
-#shapiro.test(linearModel_airBNB_lama[["residuals"]])
+qqnorm(linearModel_airBNB_lama_nointercept[["residuals"]])
+qqline(linearModel_airBNB_lama_nointercept[["residuals"]])
 ```
 
 
+## Cluster 2 : Properti Baru
+
+Pada tahap ini dilakukan pemodelan terhadap properti baru, yakni properti yang belum memiliki rating. Langkah awal adalah dengan membuat *subset* atas data properti yang belum memiliki rating
 
 ```{r}
-subset_airBNB_baru<-subset(airBNB,is.na(review_scores_rating))
+subset_airBNB_baru<-subset(airBNB,is.na(review_scores_rating),)
+```
 
-linearModel<-lm(log_price ~ property_type+room_type+accommodates+bathrooms+
+Selanjutnya dilakukan pemodelan dengan menggunakan metode regresi linear `lm()`, dengan mengabaikan *intercept*
+
+```{r}
+linearModel_airBNB_baru<-lm(log_price ~ 0+property_type+room_type+accommodates+bathrooms+
                   bed_type+cancellation_policy+cleaning_fee+city+instant_bookable+
                   latitude+longitude+bedrooms+beds, data=subset_airBNB_baru)
-summary(linearModel)
+summary(linearModel_airBNB_baru)
 ```
 
-* id = 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Dari proses pemodelan diatas, didapatkan akurasi model sebesar 0.985 (98.5%). Bila dilakukan proses *feature selection* didapatkan hasil sebagai berikut :
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r}
+fs_both_baru<-stepAIC(linearModel_airBNB_baru,direction = "both")
+```
+Dari hasil *feature selection*, didapatkan hasil bahwa model akan mengabaikan fitur `bed_type`. Adapun hasil regresi linear yang didapatkan sebagai berikut : 
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+summary(fs_both_baru)
+```
+
+Dari hasil regresi linear dengan fitur yang sudah dilakukan seleksi, akan menghasilkan nilai akurasi yang tidak berubah, yakni sebesar 98.5%
+
+# Discussion
+
+Dari hasil pemodelan kedua subset data, yakni data properti Airbnb baru dan *existing*, didapatkan hasil bahwa fitur berikut mempengaruhi harga sewa properti *existing* : 
+
+- Tipe properti (contoh : Villa, Rumah, Kondominium, dsb)
+- Tipe kamar (contoh : kamar pribadi, shared room, dsb)
+- Jumlah tamu yang dapat ditampung dalam properti. Semakin banyak jumlah tamu yang dapat di tampung, semakin mahal harga sewanya
+- Jumlah kamar mandi yang tersedia
+- Jenis *bed* yang disediakan. Properti yang memiliki bed berjenis *futon* akan semakin murah harganya 
+- *Cancellation Policy*
+- Kota letak properti. Kota Boston memiliki rata-rata harga properti tertinggi daripada keseluruhan data
+- Ketersediaan fitur *instant_bookable*. Properti yang tidak memiliki fitur tersebut akan semakin murah
+- *Latitude* & *longitude* properti. Semakin properti terletak di daerah timur & utara AS, semakin mahal harga sewanya.
+- Semakin tinggi nilai review, semakin mahal harga propertinya.
+- Jumlah kamar tidur melambangkan semakin banyaknya tamu yang dapat ditampung dalam properti. Sehingga fitur `bedrooms` mempengaruhi harga properti
+- Jumlah tempat tidur yang disediakan akan mempengaruhi harga properti. Semakin banyak jumlah tempat tidur, semakin rendah harganya
+
+Untuk properti baru, fitur yang mempengaruhi, antara lain : 
+
+- Tipe properti
+- Jenis kamar (private/share)
+- Jumlah tamu yang dapat ditampung (semakin banyak semakin tinggi harga sewa properti)
+- Jumlah kamar mandi tersedia
+- *Cancellation Policy*
+- *Cleaning Fee*
+- Kota letak properti
+- Fitur *instant bookable* (apabila ada, semakin mengurangi harga sewa)
+- *Latitude* & *longitude* properti. Semakin properti terletak di daerah timur & utara AS, semakin mahal harga sewanya.
+- Jumlah ruang tidur dan tempat tidur mempengaruhi harga properti
