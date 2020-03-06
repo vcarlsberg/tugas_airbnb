@@ -68,6 +68,15 @@ Dari data terdapat *instance* yang nilai log_price nya adalah 0. Terkait hal ini
 airBNB<-subset(airBNB,log_price>0)
 ```
 
+Korelasi data numerik dapat disajikan sebagai berikut : 
+```{r}
+library(tidyverse)
+library(corrplot)
+subset_airBNB_numeric<-as.matrix(na.omit(airBNB %>% select(2,6,7,24,25)))
+corrplot(cor(subset_airBNB_numeric), method="color",is.corr = TRUE)
+```
+
+Dari grafik diatas, dapat terlihat bahwa `log_price` berkorelasi kuat dengan fitur `accomodates` dan `bathrooms`. Semakin banyak penginap yang dapat diakomodir dan semakin banyak jumlah kamar mandi, maka semakin tinggi harga sewa properti tersebut. Dalam hal ini, tidak ada pengaruh jumlah review terhadap rating score.
 
 Secara garis besar, data yang digunakan memiliki sebaran harga sebagai berikut : 
 ```{r}
